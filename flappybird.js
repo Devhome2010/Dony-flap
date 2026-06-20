@@ -13,8 +13,8 @@ let boardHeight = 640;
 let context;
 
 //bird
-let birdWidth = 90; //width/height ratio = 408/228 = 17/12
-let birdHeight = 90 ;
+let birdWidth = 100; //width/height ratio = 408/228 = 17/12
+let birdHeight = 120;
 let birdX = boardWidth/8;
 let birdY = boardHeight/2 + 40;
 let hitboxPaddingX = 18;
@@ -41,7 +41,6 @@ let bottomPipeImg;
 //physics
 let velocityX = -2; //pipes moving left speed
 let velocityY = 0; //bird jump speed
-let rotation = 0;
 let gravity = 0.4;
 
 let gameOver = false;
@@ -51,7 +50,6 @@ let wingSound = new Audio("./sfx_wing.wav");
 let hitSound = new Audio("./sfx_hit.wav");
 let bgm = new Audio("./bgm_mario.mp3");
 let poiintSound = new Audio("./sfx_point.wav");
-poiintSound.volume = 0.35;
 bgm.loop = true
 
 window.onload = function() {
@@ -171,23 +169,13 @@ function update() {
 
     // STOP EVERYTHING until start
     if (!gameStarted) {
-        context.save();
-
-        context.translate(
-            bird.x + bird.width / 2,
-            bird.y + bird.height / 2
-        );
-
-        context.rotate(rotation);
-
-        context.drawImage(
-            birdImg,
-            -bird.width / 2,
-            -bird.height / 2,
-            bird.width,
-            bird.height
-        );
-
+       context.drawImage(
+        birdImg,
+        bird.x,
+        bird.y,
+        bird.width,
+        bird.height
+    );
         context.restore();
         return;
     }
@@ -200,31 +188,14 @@ function update() {
     velocityY += gravity;
     // bird.y += velocityY;
     bird.y = Math.max(bird.y + velocityY, 0); //apply gravity to current bird.y, limit the bird.y to top of the canvas
-
-    if (velocityY < 0) {
-        rotation = -0.35; // nose up
-    } else {
-        rotation = Math.min(rotation + 0.03, 1.2);
-    }
-
-    context.save();
-
-    context.translate(
-        bird.x + bird.width / 2,
-        bird.y + bird.height / 2
-    );
-
-    context.rotate(rotation);
-
+    
     context.drawImage(
         birdImg,
-        -bird.width / 2,
-        -bird.height / 2,
+        bird.x,
+        bird.y,
         bird.width,
         bird.height
     );
-
-    context.restore();
 
     if (bird.y > board.height) {
         endGame();
@@ -279,7 +250,7 @@ function placePipes() {
     // 0 -> -128 (pipeHeight/4)
     // 1 -> -128 - 256 (pipeHeight/4 - pipeHeight/2) = -3/4 pipeHeight
     let randomPipeY = pipeY - pipeHeight/4 - Math.random()*(pipeHeight/2);
-    let openingSpace = board.height/3;
+    let openingSpace = board.height/2.75;
 
     let topPipe = {
         img : topPipeImg,
